@@ -1,37 +1,34 @@
-import { of, Observable } from 'rxjs'; 
-import { map } from 'rxjs/operators';
+import "./style.css";
+console.clear();
 
+import { of, Observable, fromEvent } from "rxjs";
+import { map } from "rxjs/operators";
 /*
- * Observers can register up to 3 callbacks
- * next is called 1:M times to push new values to observer
- * error is called at most 1 time should an error occur
- * complete is called at most 1 time on completion.
+ * Calculate progress based on scroll position
  */
-const observer = {
-    next: value => console.log('next', value),
-    error: error => console.log('error', error),
-    complete: () => console.log('complete!')
-};
+function calculateScrollPercent(element) {
+  const { scrollTop, scrollHeight, clientHeight } = element;
 
-const observable = new Observable(subscriber => {
-    subscriber.next('Hello');
-    subscriber.next('World');
-    /*
-     * Once complete is called, observable will be cleaned up
-     * and no future values delivered.
-     */
-    subscriber.complete();
-    /*
-     * These values will not be logged as the observable
-     * has already completed.
-     */
-    subscriber.next('Hello');
-    subscriber.next('World');
+  return (scrollTop / (scrollHeight - clientHeight)) * 100;
+}
+
+// elems
+const progressBar: any = document.querySelector(".progress-bar");
+
+// streams
+const scroll$ = fromEvent(document, "scroll");
+
+const progress$ = scroll$.pipe(
+  /*
+   * For every scroll event, we use our helper function to
+   * map to a current scroll progress value.
+   */
+  map(({ target }: any) => calculateScrollPercent(target.scrollingElement))
+);
+/*
+ * We can then take the emitted percent and set the width
+ * on our progress bar.
+ */
+progress$.subscribe(percent => {
+  progressBar.style.width = `${percent}%`;
 });
-
-/* 
- * Subscribe hooks observer up to observable, beginning execution.
- * This creates a 1 to 1 relationship between the producer
- * (observable) and the consumer (observer).
- */
-observable.subscribe(observer);
