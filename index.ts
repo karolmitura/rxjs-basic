@@ -11,7 +11,7 @@ function calculateScrollPercent(element) {
 
   return (scrollTop / (scrollHeight - clientHeight)) * 100;
 }
-
+6
 // elems
 const progressBar: any = document.querySelector(".progress-bar");
 

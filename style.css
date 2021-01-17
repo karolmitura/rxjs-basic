@@ -1,3 +1,7 @@
+* {
+  font-family: "Lato";
+}
+
 .progress-bar {
   position: fixed;
   top: 0;
